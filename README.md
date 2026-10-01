@@ -11,9 +11,13 @@ FindIt is a campus lost-and-found web application that helps users report, brows
 src/main/java/com/uddharsh/findit
  ├─ FinditApplication.java
  ├─ entity/        JPA entities and enums
- └─ repository/    Spring Data JPA repositories
+ ├─ repository/    Spring Data JPA repositories
+ ├─ service/       Business rules and workflow
+ ├─ dto/           Request objects
+ └─ exception/     NotFound, Conflict, Forbidden exceptions
 src/test/java/com/uddharsh/findit
- └─ entity/        Domain model tests
+ ├─ entity/        Domain model tests
+ └─ service/       Workflow rule tests
 ```
 
 ## Domain Model
@@ -39,6 +43,23 @@ Item 1 ──── * Claim    (an item receives many claims)
 - A user can claim the same item only once (unique `item_id, claimant_id`).
 - Items are indexed on status, type, category and reporter for fast filtering.
 - `@Version` on `Item` and `Claim` prevents conflicting concurrent updates (optimistic locking).
+
+## Workflow Rules
+Enforced in the service layer. Until authentication is added, each action takes the acting user's id.
+
+| Action | Who | Allowed when |
+|---|---|---|
+| Report an item | Any user | Item starts as `OPEN` |
+| Edit or delete an item | Reporter only | Item is `OPEN` (delete also requires no claims) |
+| File a claim | Any user except the reporter | Item is `OPEN`, one claim per user per item |
+| View an item's claims | Reporter only | Any time |
+| Approve a claim | Reporter only | Claim is `PENDING`, item is `OPEN` |
+| Reject a claim | Reporter only | Claim is `PENDING` |
+| Mark item returned | Reporter only | Item is `CLAIMED` |
+
+Approving a claim sets the claim to `APPROVED`, the item to `CLAIMED`, and rejects all other pending claims on that item in a single transaction.
+
+**Errors:** `NotFoundException` (missing user, item or claim), `ForbiddenException` (not the reporter), `ConflictException` (rule violation, such as a duplicate email or an invalid status change).
 
 ## Getting Started
 
@@ -69,7 +90,7 @@ Tests run against the local PostgreSQL database and roll back after each test, s
 - [x] Spring Boot project setup with PostgreSQL connection
 - [x] Domain model: `User`, `Item`, `Claim` entities and relationships
 - [x] Repositories and domain model tests
-- [ ] Service layer (OPEN → CLAIMED → RETURNED workflow rules)
+- [x] Service layer with workflow rules and tests
 - [ ] REST API controllers
 - [ ] Angular frontend
 
