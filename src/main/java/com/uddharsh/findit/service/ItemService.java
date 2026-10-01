@@ -13,6 +13,9 @@ import com.uddharsh.findit.exception.NotFoundException;
 import com.uddharsh.findit.repository.ClaimRepository;
 import com.uddharsh.findit.repository.ItemRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class ItemService {
 
@@ -40,6 +43,11 @@ public class ItemService {
     public Item getItem(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item not found: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Item> listItems(Pageable pageable) {
+        return itemRepository.findAll(pageable);
     }
 
     @Transactional
@@ -76,6 +84,8 @@ public class ItemService {
         item.setStatus(ItemStatus.RETURNED);
         return item;
     }
+
+    
 
     // --- helper checks ---
 

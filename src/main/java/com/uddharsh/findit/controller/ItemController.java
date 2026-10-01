@@ -1,10 +1,14 @@
 package com.uddharsh.findit.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.uddharsh.findit.dto.ItemRequest;
 import com.uddharsh.findit.dto.ItemResponse;
+import com.uddharsh.findit.dto.PageResponse;
 import com.uddharsh.findit.service.ItemService;
 
 @RestController
@@ -15,6 +19,13 @@ public class ItemController {
 
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
+    }
+
+    @GetMapping
+    public PageResponse<ItemResponse> listItems(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        return PageResponse.from(itemService.listItems(pageable), ItemResponse::from);
     }
 
     @PostMapping
