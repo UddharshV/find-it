@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ItemService } from '../../services/item.service';
 import { ClaimService } from '../../services/claim.service';
@@ -7,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { Item } from '../../models/item';
 import { Claim } from '../../models/claim';
 import { describeError } from '../../utils/api-error';
+
 
 @Component({
   selector: 'app-item-detail',
@@ -19,6 +20,7 @@ export class ItemDetail implements OnInit {
   private itemService = inject(ItemService);
   private claimService = inject(ClaimService);
   private userService = inject(UserService);
+  private router = inject(Router);
 
   item = signal<Item | null>(null);
   loadError = signal<string | null>(null);
@@ -88,6 +90,15 @@ export class ItemDetail implements OnInit {
     if (!item) return;
     this.itemService.markReturned(item.id).subscribe({
       next: (updated) => this.item.set(updated),
+      error: (err: HttpErrorResponse) => this.actionError.set(describeError(err))
+    });
+  }
+
+  deleteItem() {
+    const item = this.item();
+    if (!item || !confirm('Delete this item? This cannot be undone.')) return;
+    this.itemService.delete(item.id).subscribe({
+      next: () => this.router.navigate(['/']),
       error: (err: HttpErrorResponse) => this.actionError.set(describeError(err))
     });
   }

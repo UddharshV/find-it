@@ -46,6 +46,15 @@
           @if (item.status === 'RETURNED') {
             <p class="muted">This item has been returned. Nothing left to do.</p>
           }
+          @if (item.status === 'OPEN') {
+            <div class="actions">
+              <a class="btn-secondary link-btn" [routerLink]="['/items', item.id, 'edit']">Edit item</a>
+              <button type="button" class="btn-danger" [disabled]="claims().length > 0" (click)="deleteItem()">Delete</button>
+            </div>
+            @if (claims().length > 0) {
+              <p class="muted">Items with claims can't be deleted.</p>
+            }
+          }
         </section>
       } @else if (item.status === 'OPEN') {
         <section class="panel">

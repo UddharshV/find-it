@@ -5,6 +5,7 @@ import { ReportItem } from './pages/report-item/report-item';
 
 export const routes: Routes = [
   { path: '', component: ItemList },
+  { path: 'items/:id/edit', component: ReportItem },
   { path: 'items/:id', component: ItemDetail },
   { path: 'report', component: ReportItem },
   { path: '**', redirectTo: '' }

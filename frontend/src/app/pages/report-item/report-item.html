@@ -1,1 +1,65 @@
-<p>report-item works!</p>
+<section class="form-page">
+  <h1>{{ editingId() ? 'Edit item' : 'Report an item' }}</h1>
+
+  @if (generalError()) {
+    <p class="error-box">{{ generalError() }}</p>
+  }
+
+  <form class="panel" [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset>
+      <legend>Did you lose it or find it?</legend>
+      <div class="radio-row">
+        <label class="radio"><input type="radio" formControlName="type" value="LOST"> I lost something</label>
+        <label class="radio"><input type="radio" formControlName="type" value="FOUND"> I found something</label>
+      </div>
+      @if (editingId()) {
+        <p class="hint">Lost or found can't be changed after an item is reported.</p>
+      }
+    </fieldset>
+
+    <div class="field">
+      <label for="title">Title</label>
+      <input id="title" type="text" formControlName="title" placeholder="e.g. Blue water bottle">
+      @if (errorFor('title'); as msg) { <p class="error">{{ msg }}</p> }
+    </div>
+
+    <div class="field">
+      <label for="description">Description <span class="optional">(optional)</span></label>
+      <textarea id="description" rows="3" formControlName="description" placeholder="Color, brand, anything distinctive"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="category">Category</label>
+        <select id="category" formControlName="category">
+          @for (category of categories; track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="eventDate">Date</label>
+        <input id="eventDate" type="date" formControlName="eventDate" [max]="maxDate">
+        @if (errorFor('eventDate'); as msg) { <p class="error">{{ msg }}</p> }
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="location">Location</label>
+      <input id="location" type="text" formControlName="location" placeholder="e.g. Hunt Library, 2nd floor">
+      @if (errorFor('location'); as msg) { <p class="error">{{ msg }}</p> }
+    </div>
+
+    <div class="field">
+      <label for="imageUrl">Image URL <span class="optional">(optional)</span></label>
+      <input id="imageUrl" type="url" formControlName="imageUrl" placeholder="https://">
+    </div>
+
+    <div class="buttons">
+      <a class="btn-secondary" [routerLink]="editingId() ? ['/items', editingId()] : ['/']">Cancel</a>
+      <button type="submit" class="btn-primary" [disabled]="submitting()">
+        {{ editingId() ? 'Save changes' : 'Report item' }}
+      </button>
+    </div>
+  </form>
+</section>

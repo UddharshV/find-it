@@ -24,3 +24,15 @@ export interface Page<T> {
   totalElements: number;
   totalPages: number;
 }
+
+export interface ItemRequest {
+  title: string;
+  description: string;
+  type: ItemType;
+  category: Category;
+  location: string;
+  eventDate: string;
+  imageUrl: string;
+}
+
+export const CATEGORIES: Category[] = ['ELECTRONICS', 'ID_CARD', 'KEYS', 'CLOTHING', 'BAGS', 'BOTTLES', 'BOOKS', 'OTHER'];
