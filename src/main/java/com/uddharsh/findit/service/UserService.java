@@ -36,6 +36,6 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<User> listUsers() {
-        return userRepository.findAll(Sort.by("name"));
+        return userRepository.findAll(Sort.by(User::getName));
 }
 }

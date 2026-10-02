@@ -9,13 +9,13 @@
   <div class="grid">
     @for (item of items(); track item.id) {
       <a class="card" [routerLink]="['/items', item.id]">
-        <div class="card-top">
-          <span class="type">{{ item.type }}</span>
-          <span class="status">{{ item.status }}</span>
+          <div class="card-top">
+          <span class="badge" [attr.data-value]="item.type">{{ item.type | label }}</span>
+          <span class="badge" [attr.data-value]="item.status">{{ item.status | label }}</span>
         </div>
         <h2>{{ item.title }}</h2>
-        <p class="meta">{{ item.category }} · {{ item.location }}</p>
-        <p class="meta">{{ item.eventDate }}</p>
+        <p class="meta">{{ item.category | label }} · {{ item.location }}</p>
+        <p class="meta">{{ item.type === 'LOST' ? 'Lost on' : 'Found on' }} {{ item.eventDate | eventDate }}</p>
       </a>
     } @empty {
       <p>No items yet.</p>

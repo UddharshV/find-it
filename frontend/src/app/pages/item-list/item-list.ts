@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item';
-
+import { LabelPipe } from '../../pipes/label.pipe';
+import { EventDatePipe } from '../../pipes/event-date.pipe';
 @Component({
   selector: 'app-item-list',
-  imports: [RouterLink],
+  imports: [RouterLink, LabelPipe, EventDatePipe],
   templateUrl: './item-list.html',
   styleUrl: './item-list.css'
 })

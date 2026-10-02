@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ItemService } from '../../services/item.service';
 import { CATEGORIES, Category, ItemRequest, ItemType } from '../../models/item';
 import { describeError } from '../../utils/api-error';
+import { LabelPipe } from '../../pipes/label.pipe';
 
 type FieldName = 'type' | 'title' | 'category' | 'location' | 'eventDate';
 
@@ -17,7 +18,7 @@ function today(): string {
 
 @Component({
   selector: 'app-report-item',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LabelPipe],
   templateUrl: './report-item.html',
   styleUrl: './report-item.css'
 })

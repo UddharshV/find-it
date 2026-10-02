@@ -7,11 +7,13 @@ import { UserService } from '../../services/user.service';
 import { Item } from '../../models/item';
 import { Claim } from '../../models/claim';
 import { describeError } from '../../utils/api-error';
+import { LabelPipe } from '../../pipes/label.pipe';
+import { EventDatePipe } from '../../pipes/event-date.pipe';
 
 
 @Component({
   selector: 'app-item-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, LabelPipe, EventDatePipe],
   templateUrl: './item-detail.html',
   styleUrl: './item-detail.css'
 })

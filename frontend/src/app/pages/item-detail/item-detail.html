@@ -6,15 +6,15 @@
   <div class="layout">
     <article class="panel main-panel">
       <div class="badges">
-        <span>{{ item.type }}</span>
-        <span>{{ item.status }}</span>
+        <span class="badge" [attr.data-value]="item.type">{{ item.type | label }}</span>
+        <span class="badge" [attr.data-value]="item.status">{{ item.status | label }}</span>
       </div>
       <h1>{{ item.title }}</h1>
       <p>{{ item.description || 'No description provided.' }}</p>
       <dl>
-        <dt>Category</dt><dd>{{ item.category }}</dd>
+        <dt>Category</dt><dd>{{ item.category | label }}</dd>
         <dt>Location</dt><dd>{{ item.location }}</dd>
-        <dt>Date</dt><dd>{{ item.eventDate }}</dd>
+        <dt>{{ item.type === 'LOST' ? 'Lost on' : 'Found on' }}</dt><dd>{{ item.eventDate | eventDate }}</dd>
         <dt>Reported by</dt><dd>{{ userName(item.reporterId) }}</dd>
       </dl>
     </article>
@@ -27,7 +27,7 @@
             <div class="claim">
               <div class="claim-top">
                 <strong>{{ userName(claim.claimantId) }}</strong>
-                <span class="claim-status">{{ claim.status }}</span>
+                <span class="badge" [attr.data-value]="claim.status">{{ claim.status | label }}</span>
               </div>
               <p>{{ claim.message }}</p>
               @if (claim.status === 'PENDING' && item.status === 'OPEN') {
