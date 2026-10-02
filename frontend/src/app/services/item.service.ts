@@ -15,4 +15,8 @@ export class ItemService {
   get(id: number): Observable<Item> {
     return this.http.get<Item>(`${this.baseUrl}/${id}`);
   }
+
+  markReturned(id: number): Observable<Item> {
+    return this.http.post<Item>(`${this.baseUrl}/${id}/return`, null);
+  }
 }
