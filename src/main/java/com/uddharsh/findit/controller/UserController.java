@@ -7,6 +7,8 @@ import com.uddharsh.findit.dto.CreateUserRequest;
 import com.uddharsh.findit.dto.UserResponse;
 import com.uddharsh.findit.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -19,7 +21,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createUser(@RequestBody CreateUserRequest request) {
+    public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
         return UserResponse.from(userService.createUser(request.name(), request.email()));
     }
 

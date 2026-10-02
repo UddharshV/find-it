@@ -9,6 +9,8 @@ import com.uddharsh.findit.dto.ClaimResponse;
 import com.uddharsh.findit.dto.CreateClaimRequest;
 import com.uddharsh.findit.service.ClaimService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api")
 public class ClaimController {
@@ -23,7 +25,7 @@ public class ClaimController {
     @ResponseStatus(HttpStatus.CREATED)
     public ClaimResponse createClaim(@RequestHeader("X-User-Id") Long userId,
                                      @PathVariable Long itemId,
-                                     @RequestBody CreateClaimRequest request) {
+                                     @Valid @RequestBody CreateClaimRequest request) {
         return ClaimResponse.from(claimService.createClaim(itemId, userId, request.message()));
     }
 

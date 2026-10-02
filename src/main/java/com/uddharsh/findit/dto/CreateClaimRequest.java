@@ -1,3 +1,7 @@
 package com.uddharsh.findit.dto;
 
-public record CreateClaimRequest(String message) {}
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record CreateClaimRequest(
+        @NotBlank @Size(max = 1000) String message) {}

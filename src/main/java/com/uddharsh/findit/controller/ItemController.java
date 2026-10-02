@@ -11,6 +11,8 @@ import com.uddharsh.findit.dto.ItemResponse;
 import com.uddharsh.findit.dto.PageResponse;
 import com.uddharsh.findit.service.ItemService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/items")
 public class ItemController {
@@ -31,7 +33,7 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemResponse createItem(@RequestHeader("X-User-Id") Long userId,
-                                   @RequestBody ItemRequest request) {
+                                   @Valid @RequestBody ItemRequest request) {
         return ItemResponse.from(itemService.createItem(userId, request));
     }
 
@@ -43,7 +45,7 @@ public class ItemController {
     @PutMapping("/{id}")
     public ItemResponse updateItem(@RequestHeader("X-User-Id") Long userId,
                                    @PathVariable Long id,
-                                   @RequestBody ItemRequest request) {
+                                   @Valid @RequestBody ItemRequest request) {
         return ItemResponse.from(itemService.updateItem(id, userId, request));
     }
 
