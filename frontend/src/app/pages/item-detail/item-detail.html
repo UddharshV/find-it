@@ -1,0 +1,86 @@
+<a routerLink="/" class="back">← All items</a>
+
+@if (loadError()) {
+  <p class="error">{{ loadError() }}</p>
+} @else if (item(); as item) {
+  <div class="layout">
+    <article class="panel main-panel">
+      <div class="badges">
+        <span class="badge" [attr.data-value]="item.type">{{ item.type | label }}</span>
+        <span class="badge" [attr.data-value]="item.status">{{ item.status | label }}</span>
+      </div>
+      <h1>{{ item.title }}</h1>
+      <p>{{ item.description || 'No description provided.' }}</p>
+      <dl>
+        <dt>Category</dt><dd>{{ item.category | label }}</dd>
+        <dt>Location</dt><dd>{{ item.location }}</dd>
+        <dt>{{ item.type === 'LOST' ? 'Lost on' : 'Found on' }}</dt><dd>{{ item.eventDate | eventDate }}</dd>
+        <dt>Reported by</dt><dd>{{ userName(item.reporterId) }}</dd>
+      </dl>
+    </article>
+
+    <aside class="side">
+      @if (isReporter()) {
+        <section class="panel">
+          <h2>Claims</h2>
+          @for (claim of claims(); track claim.id) {
+            <div class="claim">
+              <div class="claim-top">
+                <strong>{{ userName(claim.claimantId) }}</strong>
+                <span class="badge" [attr.data-value]="claim.status">{{ claim.status | label }}</span>
+              </div>
+              <p>{{ claim.message }}</p>
+              @if (claim.status === 'PENDING' && item.status === 'OPEN') {
+                <div class="actions">
+                  <button type="button" class="btn-primary" (click)="approve(claim.id)">Approve</button>
+                  <button type="button" class="btn-secondary" (click)="reject(claim.id)">Reject</button>
+                </div>
+              }
+            </div>
+          } @empty {
+            <p class="muted">No claims yet.</p>
+          }
+          @if (item.status === 'CLAIMED') {
+            <button type="button" class="btn-primary full" (click)="markReturned()">Mark as returned</button>
+          }
+          @if (item.status === 'RETURNED') {
+            <p class="muted">This item has been returned. Nothing left to do.</p>
+          }
+          @if (item.status === 'OPEN') {
+            <div class="actions">
+              <a class="btn-secondary link-btn" [routerLink]="['/items', item.id, 'edit']">Edit item</a>
+              <button type="button" class="btn-danger" [disabled]="claims().length > 0" (click)="deleteItem()">Delete</button>
+            </div>
+            @if (claims().length > 0) {
+              <p class="muted">Items with claims can't be deleted.</p>
+            }
+          }
+        </section>
+      } @else if (item.status === 'OPEN') {
+        <section class="panel">
+          @if (claimSent()) {
+            <h2>Claim sent</h2>
+            <p class="muted">The reporter will review it.</p>
+          } @else {
+            <h2>Is this yours?</h2>
+            <p class="muted">Describe something only the owner would know.</p>
+            <label for="claim-message">Your message</label>
+            <textarea id="claim-message" rows="4" [value]="message()" (input)="onMessageInput($event)"></textarea>
+            <button type="button" class="btn-primary full" (click)="submitClaim()">Submit claim</button>
+          }
+        </section>
+      } @else {
+        <section class="panel">
+          <h2>No longer open</h2>
+          <p class="muted">This item has already been {{ item.status === 'CLAIMED' ? 'claimed' : 'returned' }}.</p>
+        </section>
+      }
+
+      @if (actionError()) {
+        <p class="error">{{ actionError() }}</p>
+      }
+    </aside>
+  </div>
+} @else {
+  <p>Loading…</p>
+}

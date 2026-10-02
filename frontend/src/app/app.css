@@ -1,0 +1,9 @@
+.header { background: #fff; border-bottom: 1px solid #d9dee5; }
+.header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 20px; }
+.logo { font-size: 20px; font-weight: 600; color: #16202c; text-decoration: none; }
+.nav { flex-grow: 1; }
+.nav a { color: #16202c; text-decoration: none; font-weight: 500; }
+.btn-primary { background: #1f4fb8; color: #fff; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+.main { max-width: 1120px; margin: 0 auto; padding: 32px 24px; }
+.acting-as { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #4a5565; }
+.acting-as select { min-height: 40px; padding: 0 10px; border: 1px solid #c3cad4; border-radius: 8px; font: inherit; color: #16202c; }

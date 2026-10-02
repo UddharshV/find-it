@@ -1,0 +1,32 @@
+<h1>Lost &amp; found on campus</h1>
+
+@if (loading()) {
+  <p>Loading items…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else {
+  <p class="count">{{ totalElements() }} {{ totalElements() === 1 ? 'item' : 'items' }}</p>
+  <div class="grid">
+    @for (item of items(); track item.id) {
+      <a class="card" [routerLink]="['/items', item.id]">
+        <div class="card-top">
+          <span class="badge" [attr.data-value]="item.type">{{ item.type | label }}</span>
+          <span class="badge" [attr.data-value]="item.status">{{ item.status | label }}</span>
+        </div>
+        <h2>{{ item.title }}</h2>
+        <p class="meta">{{ item.category | label }} · {{ item.location }}</p>
+        <p class="meta">{{ item.type === 'LOST' ? 'Lost on' : 'Found on' }} {{ item.eventDate | eventDate }}</p>
+      </a>
+    } @empty {
+      <p>No items yet.</p>
+    }
+  </div>
+
+  @if (totalPages() > 1) {
+    <nav class="pagination" aria-label="Pagination">
+      <button type="button" (click)="previous()" [disabled]="!hasPrevious()">Previous</button>
+      <span>Page {{ page() + 1 }} of {{ totalPages() }}</span>
+      <button type="button" (click)="next()" [disabled]="!hasNext()">Next</button>
+    </nav>
+  }
+}

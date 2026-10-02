@@ -1,0 +1,21 @@
+<header class="header">
+  <div class="header-inner">
+    <a routerLink="/" class="logo">FindIt</a>
+    <nav class="nav">
+      <a routerLink="/">Browse items</a>
+    </nav>
+    <label class="acting-as">
+      Acting as
+      <select (change)="onUserChange($event)">
+        @for (user of userService.users(); track user.id) {
+          <option [value]="user.id" [selected]="user.id === userService.currentUserId()">{{ user.name }}</option>
+        }
+      </select>
+    </label>
+    <a routerLink="/report" class="btn-primary">Report an item</a>
+  </div>
+</header>
+
+<main class="main">
+  <router-outlet />
+</main>
