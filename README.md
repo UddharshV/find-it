@@ -4,22 +4,31 @@ FindIt is a campus lost-and-found web application that helps users report, brows
 ## Tech Stack
 - **Backend:** Java 21, Spring Boot 4, Spring Data JPA (Hibernate), Jakarta Validation
 - **Database:** PostgreSQL
-- **Frontend:** Angular (planned)
+- **Frontend:** Angular (standalone components, signals, Reactive Forms), TypeScript
 
 ## Project Structure
 ```
-src/main/java/com/uddharsh/findit
- ├─ FinditApplication.java
- ├─ config/        CORS configuration
- ├─ controller/    REST endpoints
- ├─ service/       Business rules and workflow
- ├─ repository/    Spring Data JPA repositories
- ├─ entity/        JPA entities and enums
- ├─ dto/           Request and response objects
- └─ exception/     Custom exceptions and global error handler
-src/test/java/com/uddharsh/findit
- ├─ entity/        Domain model tests
- └─ service/       Workflow rule tests
+findit/
+ ├─ src/main/java/com/uddharsh/findit     Spring Boot backend
+ │   ├─ FinditApplication.java
+ │   ├─ config/        CORS configuration
+ │   ├─ controller/    REST endpoints
+ │   ├─ service/       Business rules and workflow
+ │   ├─ repository/    Spring Data JPA repositories
+ │   ├─ entity/        JPA entities and enums
+ │   ├─ dto/           Request and response objects
+ │   └─ exception/     Custom exceptions and global error handler
+ ├─ src/test/java/com/uddharsh/findit     Backend tests
+ │   ├─ entity/        Domain model tests
+ │   └─ service/       Workflow rule tests
+ ├─ frontend/src/app                      Angular frontend
+ │   ├─ pages/         Item list, item detail, report/edit form
+ │   ├─ services/      API calls (items, claims, users)
+ │   ├─ models/        TypeScript types mirroring the API
+ │   ├─ interceptors/  Adds the X-User-Id header to every request
+ │   ├─ pipes/         Display formatting (labels, dates)
+ │   └─ utils/         API error handling
+ └─ db/                Demo data scripts
 ```
 
 ## Domain Model
@@ -61,11 +70,20 @@ Enforced in the service layer.
 
 Approving a claim sets the claim to `APPROVED`, the item to `CLAIMED`, and rejects all other pending claims on that item in a single transaction.
 
-## REST API
-Until authentication is added, requests that act on behalf of a user send the user's id in an `X-User-Id` header.
+## Frontend
+| Page | URL | What it does |
+|---|---|---|
+| Browse | `/` | Paginated grid of items with type and status badges |
+| Item detail | `/items/{id}` | Full details. The reporter sees claims with Approve/Reject, Mark as returned, Edit and Delete; other users see a claim form |
+| Report an item | `/report` | Form with browser-side validation plus field errors from the API |
+| Edit an item | `/items/{id}/edit` | Same form, pre-filled; lost/found cannot be changed |
 
+Until authentication is added, the **Acting as** dropdown in the header picks the current user. An HTTP interceptor sends that user's id as the `X-User-Id` header on every request, and the choice is remembered across page reloads.
+
+## REST API
 | Method | Endpoint | Header | Description |
 |---|---|---|---|
+| GET | `/api/users` | | List users |
 | POST | `/api/users` | | Create a user |
 | GET | `/api/users/{id}` | | Get a user |
 | GET | `/api/items?page=0&size=20&sort=createdAt,desc` | | List items (paginated, newest first by default) |
@@ -95,6 +113,7 @@ CORS allows requests from the Angular dev server at `http://localhost:4200`.
 ### Prerequisites
 - Java 21
 - PostgreSQL running locally on port 5432
+- Node.js 20 or newer, and the Angular CLI (`npm install -g @angular/cli`)
 
 ### Database setup
 ```bash
@@ -117,11 +136,26 @@ Database credentials are never committed. Provide them in either of two ways:
   spring.datasource.password=yourpassword
   ```
 
-### Run the app
+### Run the backend
 ```bash
 ./mvnw spring-boot:run
 ```
-The API is available at `http://localhost:8080`.
+The API is available at `http://localhost:8080`. Start it once before loading demo data, so Hibernate creates the tables.
+
+### Load demo data (optional)
+```bash
+psql -U findit_app -d findit -f db/seed-data.sql    # resets the database: 5 users, 14 items, 10 claims
+psql -U findit_app -d findit -f db/more-items.sql   # adds 10 more items and 6 claims
+```
+`seed-data.sql` deletes all existing data first, so only run it against a development database.
+
+### Run the frontend
+```bash
+cd frontend
+npm install
+ng serve
+```
+Open `http://localhost:4200`. The backend must be running on port 8080.
 
 ### Run the tests
 ```bash
@@ -135,8 +169,10 @@ Tests run against the `findit_test` database and roll back after each test, so n
 - [x] Repositories and domain model tests
 - [x] Service layer with workflow rules and tests
 - [x] REST API controllers with validation, pagination, and error handling
-- [ ] Angular frontend
+- [x] Angular frontend: browse, detail, claims workflow, report/edit form, pagination
 
 ## Future Work
 - Search and filters on the item list
+- A "my claims" view, so claimants can track their claims after leaving an item's page
 - Authentication (Spring Security), replacing the `X-User-Id` header
+- Deployment
