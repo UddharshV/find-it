@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ItemService } from '../../services/item.service';
 import { Item } from '../../models/item';
 
 @Component({
   selector: 'app-item-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './item-list.html',
   styleUrl: './item-list.css'
 })

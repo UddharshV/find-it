@@ -8,7 +8,7 @@
   <p class="count">{{ items().length }} items</p>
   <div class="grid">
     @for (item of items(); track item.id) {
-      <article class="card">
+      <a class="card" [routerLink]="['/items', item.id]">
         <div class="card-top">
           <span class="type">{{ item.type }}</span>
           <span class="status">{{ item.status }}</span>
@@ -16,7 +16,7 @@
         <h2>{{ item.title }}</h2>
         <p class="meta">{{ item.category }} · {{ item.location }}</p>
         <p class="meta">{{ item.eventDate }}</p>
-      </article>
+      </a>
     } @empty {
       <p>No items yet.</p>
     }

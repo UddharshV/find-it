@@ -1,0 +1,22 @@
+<a routerLink="/" class="back">← All items</a>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (item(); as item) {
+  <article class="panel">
+    <div class="badges">
+      <span>{{ item.type }}</span>
+      <span>{{ item.status }}</span>
+    </div>
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.description || 'No description provided.' }}</p>
+    <dl>
+      <dt>Category</dt><dd>{{ item.category }}</dd>
+      <dt>Location</dt><dd>{{ item.location }}</dd>
+      <dt>Date</dt><dd>{{ item.eventDate }}</dd>
+      <dt>Reported by</dt><dd>User #{{ item.reporterId }}</dd>
+    </dl>
+  </article>
+} @else {
+  <p>Loading…</p>
+}

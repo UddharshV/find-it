@@ -11,4 +11,8 @@ export class ItemService {
   list(page = 0, size = 20): Observable<Page<Item>> {
     return this.http.get<Page<Item>>(this.baseUrl, { params: { page, size } });
   }
+
+  get(id: number): Observable<Item> {
+    return this.http.get<Item>(`${this.baseUrl}/${id}`);
+  }
 }

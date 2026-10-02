@@ -1,0 +1,8 @@
+.back { display: inline-block; margin-bottom: 16px; color: #1f4fb8; text-decoration: none; font-weight: 500; }
+.error { color: #b42318; }
+.panel { background: #fff; border: 1px solid #d9dee5; border-radius: 12px; padding: 28px; max-width: 720px; }
+.badges { display: flex; gap: 8px; font-size: 13px; font-weight: 600; }
+h1 { margin: 12px 0 8px; font-size: 28px; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin: 20px 0 0; }
+dt { color: #4a5565; }
+dd { margin: 0; font-weight: 500; }
