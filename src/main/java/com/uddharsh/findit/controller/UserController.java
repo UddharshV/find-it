@@ -9,6 +9,8 @@ import com.uddharsh.findit.service.UserService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -29,4 +31,9 @@ public class UserController {
     public UserResponse getUser(@PathVariable Long id) {
         return UserResponse.from(userService.getUser(id));
     }
+
+    @GetMapping
+    public List<UserResponse> listUsers() {
+        return userService.listUsers().stream().map(UserResponse::from).toList();
+}
 }

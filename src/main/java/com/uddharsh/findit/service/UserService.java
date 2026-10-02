@@ -8,6 +8,9 @@ import com.uddharsh.findit.exception.ConflictException;
 import com.uddharsh.findit.exception.NotFoundException;
 import com.uddharsh.findit.repository.UserRepository;
 
+import java.util.List;
+import org.springframework.data.domain.Sort;
+
 @Service                                   // tells Spring to create and manage this class
 public class UserService {
 
@@ -30,4 +33,9 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found: " + id));
     }
+
+    @Transactional(readOnly = true)
+    public List<User> listUsers() {
+        return userRepository.findAll(Sort.by("name"));
+}
 }
