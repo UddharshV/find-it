@@ -1,1 +1,24 @@
-<p>item-list works!</p>
+<h1>Lost &amp; found on campus</h1>
+
+@if (loading()) {
+  <p>Loading items…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else {
+  <p class="count">{{ items().length }} items</p>
+  <div class="grid">
+    @for (item of items(); track item.id) {
+      <article class="card">
+        <div class="card-top">
+          <span class="type">{{ item.type }}</span>
+          <span class="status">{{ item.status }}</span>
+        </div>
+        <h2>{{ item.title }}</h2>
+        <p class="meta">{{ item.category }} · {{ item.location }}</p>
+        <p class="meta">{{ item.eventDate }}</p>
+      </article>
+    } @empty {
+      <p>No items yet.</p>
+    }
+  </div>
+}
