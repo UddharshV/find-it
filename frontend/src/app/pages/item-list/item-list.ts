@@ -14,7 +14,7 @@ import { EventDatePipe } from '../../pipes/event-date.pipe';
 export class ItemList implements OnInit {
   private itemService = inject(ItemService);
 
-  readonly pageSize = 12;
+  readonly pageSize = 16;
 
   items = signal<Item[]>([]);
   page = signal(0);
