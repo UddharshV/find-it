@@ -2,7 +2,7 @@
 FindIt is a campus lost-and-found web application that helps users report, browse, and claim lost or found items. The application is designed around a simple workflow where reported items can move from open to claimed to returned, while providing a practical full-stack implementation using Angular, Spring Boot, and PostgreSQL.
 
 ## Tech Stack
-- **Backend:** Java 21, Spring Boot 4, Spring Data JPA (Hibernate)
+- **Backend:** Java 21, Spring Boot 4, Spring Data JPA (Hibernate), Jakarta Validation
 - **Database:** PostgreSQL
 - **Frontend:** Angular (planned)
 
@@ -10,11 +10,13 @@ FindIt is a campus lost-and-found web application that helps users report, brows
 ```
 src/main/java/com/uddharsh/findit
  ├─ FinditApplication.java
- ├─ entity/        JPA entities and enums
- ├─ repository/    Spring Data JPA repositories
+ ├─ config/        CORS configuration
+ ├─ controller/    REST endpoints
  ├─ service/       Business rules and workflow
- ├─ dto/           Request objects
- └─ exception/     NotFound, Conflict, Forbidden exceptions
+ ├─ repository/    Spring Data JPA repositories
+ ├─ entity/        JPA entities and enums
+ ├─ dto/           Request and response objects
+ └─ exception/     Custom exceptions and global error handler
 src/test/java/com/uddharsh/findit
  ├─ entity/        Domain model tests
  └─ service/       Workflow rule tests
@@ -45,7 +47,7 @@ Item 1 ──── * Claim    (an item receives many claims)
 - `@Version` on `Item` and `Claim` prevents conflicting concurrent updates (optimistic locking).
 
 ## Workflow Rules
-Enforced in the service layer. Until authentication is added, each action takes the acting user's id.
+Enforced in the service layer.
 
 | Action | Who | Allowed when |
 |---|---|---|
@@ -59,7 +61,34 @@ Enforced in the service layer. Until authentication is added, each action takes 
 
 Approving a claim sets the claim to `APPROVED`, the item to `CLAIMED`, and rejects all other pending claims on that item in a single transaction.
 
-**Errors:** `NotFoundException` (missing user, item or claim), `ForbiddenException` (not the reporter), `ConflictException` (rule violation, such as a duplicate email or an invalid status change).
+## REST API
+Until authentication is added, requests that act on behalf of a user send the user's id in an `X-User-Id` header.
+
+| Method | Endpoint | Header | Description |
+|---|---|---|---|
+| POST | `/api/users` | | Create a user |
+| GET | `/api/users/{id}` | | Get a user |
+| GET | `/api/items?page=0&size=20&sort=createdAt,desc` | | List items (paginated, newest first by default) |
+| POST | `/api/items` | `X-User-Id` | Report an item |
+| GET | `/api/items/{id}` | | Get an item |
+| PUT | `/api/items/{id}` | `X-User-Id` | Edit an item |
+| DELETE | `/api/items/{id}` | `X-User-Id` | Delete an item |
+| POST | `/api/items/{id}/return` | `X-User-Id` | Mark an item returned |
+| POST | `/api/items/{id}/claims` | `X-User-Id` | File a claim |
+| GET | `/api/items/{id}/claims` | `X-User-Id` | List an item's claims |
+| POST | `/api/claims/{id}/approve` | `X-User-Id` | Approve a claim |
+| POST | `/api/claims/{id}/reject` | `X-User-Id` | Reject a claim |
+
+**Error responses** use the standard `ProblemDetail` JSON format:
+
+| Status | When |
+|---|---|
+| 400 Bad Request | Validation failed (field errors listed under `errors`), malformed JSON, or invalid enum value |
+| 403 Forbidden | The acting user is not the item's reporter |
+| 404 Not Found | User, item or claim does not exist |
+| 409 Conflict | Rule violation, such as a duplicate email, an invalid status change, or a concurrent update |
+
+CORS allows requests from the Angular dev server at `http://localhost:4200`.
 
 ## Getting Started
 
@@ -69,30 +98,45 @@ Approving a claim sets the claim to `APPROVED`, the item to `CLAIMED`, and rejec
 
 ### Database setup
 ```bash
-psql -U postgres -c "CREATE DATABASE findit;"
+psql -U postgres -c "CREATE DATABASE findit OWNER findit_app;"
+psql -U postgres -c "CREATE DATABASE findit_test OWNER findit_app;"
 ```
-Tables are created automatically by Hibernate on startup.
+Tables are created automatically by Hibernate on startup. `findit` is used when running the app, and `findit_test` when running tests.
+
+### Credentials
+Database credentials are never committed. Provide them in either of two ways:
+
+- **Environment variables:**
+  ```bash
+  export DB_USERNAME=findit_app
+  export DB_PASSWORD=yourpassword
+  ```
+- **A local `application.properties` in the project root** (ignored by git):
+  ```properties
+  spring.datasource.username=findit_app
+  spring.datasource.password=yourpassword
+  ```
 
 ### Run the app
 ```bash
-export DB_USER=postgres
-export DB_PASSWORD=yourpassword
 ./mvnw spring-boot:run
 ```
+The API is available at `http://localhost:8080`.
 
 ### Run the tests
 ```bash
 ./mvnw test
 ```
-Tests run against the local PostgreSQL database and roll back after each test, so no data is left behind.
+Tests run against the `findit_test` database and roll back after each test, so no data is left behind.
 
 ## Progress
 - [x] Spring Boot project setup with PostgreSQL connection
 - [x] Domain model: `User`, `Item`, `Claim` entities and relationships
 - [x] Repositories and domain model tests
 - [x] Service layer with workflow rules and tests
-- [ ] REST API controllers
+- [x] REST API controllers with validation, pagination, and error handling
 - [ ] Angular frontend
 
 ## Future Work
-- Authentication (Spring Security)
+- Search and filters on the item list
+- Authentication (Spring Security), replacing the `X-User-Id` header
