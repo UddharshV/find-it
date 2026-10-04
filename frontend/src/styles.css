@@ -1,5 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
 body { margin: 0; background: #f4f5f7; color: #16202c; font-family: system-ui, -apple-system, sans-serif; font-size: 15px; }
+
 .badge { display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
 .badge[data-value="OPEN"], .badge[data-value="APPROVED"] { color: #16623a; background: #e3f3e9; }
 .badge[data-value="CLAIMED"], .badge[data-value="PENDING"] { color: #7a4e00; background: #fbefd5; }

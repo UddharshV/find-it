@@ -35,4 +35,14 @@ export interface ItemRequest {
   imageUrl: string;
 }
 
+export const ITEM_TYPES: ItemType[] = ['LOST', 'FOUND'];
+export const ITEM_STATUSES: ItemStatus[] = ['OPEN', 'CLAIMED', 'RETURNED'];
+
+export interface ItemFilters {
+  q: string;
+  type: ItemType | '';
+  status: ItemStatus | '';
+  category: Category | '';
+}
+
 export const CATEGORIES: Category[] = ['ELECTRONICS', 'ID_CARD', 'KEYS', 'CLOTHING', 'BAGS', 'BOTTLES', 'BOOKS', 'OTHER'];
