@@ -9,7 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import com.uddharsh.findit.dto.ItemRequest;
 import com.uddharsh.findit.dto.ItemResponse;
 import com.uddharsh.findit.dto.PageResponse;
+import com.uddharsh.findit.entity.ItemStatus;
+import com.uddharsh.findit.entity.ItemType;
 import com.uddharsh.findit.service.ItemService;
+
+import com.uddharsh.findit.entity.Category;
+import com.uddharsh.findit.entity.ItemStatus;
+import com.uddharsh.findit.entity.ItemType;
 
 import jakarta.validation.Valid;
 
@@ -25,9 +31,15 @@ public class ItemController {
 
     @GetMapping
     public PageResponse<ItemResponse> listItems(
+            @RequestParam(required = false) ItemType type,
+            @RequestParam(required = false) ItemStatus status,
+            @RequestParam(required = false) Category category,
+            @RequestParam(required = false) String q,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return PageResponse.from(itemService.listItems(pageable), ItemResponse::from);
+        return PageResponse.from(
+                itemService.searchItems(type, status, category, q, pageable),
+                ItemResponse::from);
     }
 
     @PostMapping
