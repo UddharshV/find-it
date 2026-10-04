@@ -6,15 +6,22 @@ import org.springframework.transaction.annotation.Transactional;
 import com.uddharsh.findit.dto.ItemRequest;
 import com.uddharsh.findit.entity.Item;
 import com.uddharsh.findit.entity.ItemStatus;
+import com.uddharsh.findit.entity.ItemType;
 import com.uddharsh.findit.entity.User;
 import com.uddharsh.findit.exception.ConflictException;
 import com.uddharsh.findit.exception.ForbiddenException;
 import com.uddharsh.findit.exception.NotFoundException;
 import com.uddharsh.findit.repository.ClaimRepository;
 import com.uddharsh.findit.repository.ItemRepository;
+import com.uddharsh.findit.repository.ItemSpecifications;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import com.uddharsh.findit.entity.Category;
 
 @Service
 public class ItemService {
@@ -46,8 +53,15 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Item> listItems(Pageable pageable) {
-        return itemRepository.findAll(pageable);
+    public Page<Item> searchItems(ItemType type, ItemStatus status, Category category,
+                                String text, Pageable pageable) {
+        List<Specification<Item>> filters = new ArrayList<>();
+        if (type != null)     filters.add(ItemSpecifications.hasType(type));
+        if (status != null)   filters.add(ItemSpecifications.hasStatus(status));
+        if (category != null) filters.add(ItemSpecifications.hasCategory(category));
+        if (text != null && !text.isBlank()) filters.add(ItemSpecifications.matchesText(text.trim()));
+
+        return itemRepository.findAll(Specification.allOf(filters), pageable);
     }
 
     @Transactional

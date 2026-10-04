@@ -14,7 +14,7 @@ findit/
  │   ├─ config/        CORS configuration
  │   ├─ controller/    REST endpoints
  │   ├─ service/       Business rules and workflow
- │   ├─ repository/    Spring Data JPA repositories
+ │   ├─ repository/    Spring Data JPA repositories and search specifications
  │   ├─ entity/        JPA entities and enums
  │   ├─ dto/           Request and response objects
  │   └─ exception/     Custom exceptions and global error handler
@@ -73,7 +73,7 @@ Approving a claim sets the claim to `APPROVED`, the item to `CLAIMED`, and rejec
 ## Frontend
 | Page | URL | What it does |
 |---|---|---|
-| Browse | `/` | Paginated grid of items with type and status badges |
+| Browse | `/` | Paginated grid of items with type and status badges, a text search, and filters for type, status and category |
 | Item detail | `/items/{id}` | Full details. The reporter sees claims with Approve/Reject, Mark as returned, Edit and Delete; other users see a claim form |
 | Report an item | `/report` | Form with browser-side validation plus field errors from the API |
 | Edit an item | `/items/{id}/edit` | Same form, pre-filled; lost/found cannot be changed |
@@ -86,7 +86,7 @@ Until authentication is added, the **Acting as** dropdown in the header picks th
 | GET | `/api/users` | | List users |
 | POST | `/api/users` | | Create a user |
 | GET | `/api/users/{id}` | | Get a user |
-| GET | `/api/items?page=0&size=20&sort=createdAt,desc` | | List items (paginated, newest first by default) |
+| GET | `/api/items` | | List and search items (see query parameters below) |
 | POST | `/api/items` | `X-User-Id` | Report an item |
 | GET | `/api/items/{id}` | | Get an item |
 | PUT | `/api/items/{id}` | `X-User-Id` | Edit an item |
@@ -97,11 +97,23 @@ Until authentication is added, the **Acting as** dropdown in the header picks th
 | POST | `/api/claims/{id}/approve` | `X-User-Id` | Approve a claim |
 | POST | `/api/claims/{id}/reject` | `X-User-Id` | Reject a claim |
 
+**Query parameters for `GET /api/items`** (all optional, combine freely):
+
+| Parameter | Example | Effect |
+|---|---|---|
+| `q` | `q=library` | Case-insensitive text search in title and description |
+| `type` | `type=LOST` | `LOST` or `FOUND` |
+| `status` | `status=OPEN` | `OPEN`, `CLAIMED` or `RETURNED` |
+| `category` | `category=KEYS` | Any `Category` value |
+| `page`, `size`, `sort` | `page=0&size=20&sort=createdAt,desc` | Pagination; newest first by default |
+
+Filters are built with Spring Data JPA Specifications and joined with AND; with no filters, every item is returned.
+
 **Error responses** use the standard `ProblemDetail` JSON format:
 
 | Status | When |
 |---|---|
-| 400 Bad Request | Validation failed (field errors listed under `errors`), malformed JSON, or invalid enum value |
+| 400 Bad Request | Validation failed (field errors listed under `errors`), malformed JSON, or an invalid enum value in the body or a query parameter |
 | 403 Forbidden | The acting user is not the item's reporter |
 | 404 Not Found | User, item or claim does not exist |
 | 409 Conflict | Rule violation, such as a duplicate email, an invalid status change, or a concurrent update |
@@ -170,9 +182,9 @@ Tests run against the `findit_test` database and roll back after each test, so n
 - [x] Service layer with workflow rules and tests
 - [x] REST API controllers with validation, pagination, and error handling
 - [x] Angular frontend: browse, detail, claims workflow, report/edit form, pagination
+- [x] Search and filters on the item list (backend and frontend)
 
 ## Future Work
-- Search and filters on the item list
 - A "my claims" view, so claimants can track their claims after leaving an item's page
 - Authentication (Spring Security), replacing the `X-User-Id` header
 - Deployment

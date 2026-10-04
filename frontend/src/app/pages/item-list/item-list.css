@@ -13,3 +13,14 @@ h1 { margin: 0 0 4px; font-size: 28px; }
 .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 24px; font-size: 14px; color: #4a5565; }
 .pagination button { min-height: 44px; padding: 0 16px; border: 1px solid #c3cad4; border-radius: 8px; background: #fff; color: #16202c; font: inherit; font-weight: 500; cursor: pointer; }
 .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+.filters { display: flex; flex-direction: column; gap: 12px; margin: 16px 0 20px; padding: 16px; background: #fff; border: 1px solid #d9dee5; border-radius: 12px; }
+.search { display: flex; gap: 8px; }
+.search input { flex: 1; min-height: 44px; padding: 0 12px; border: 1px solid #c3cad4; border-radius: 8px; font: inherit; }
+.selects { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.selects label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500; color: #4a5565; }
+.selects select { min-height: 40px; min-width: 150px; padding: 0 10px; border: 1px solid #c3cad4; border-radius: 8px; background: #fff; font: inherit; color: #16202c; }
+.btn-primary { min-height: 44px; padding: 0 18px; border: none; border-radius: 8px; background: #1f4fb8; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.btn-link { min-height: 40px; padding: 0 8px; border: none; background: none; color: #1f4fb8; font: inherit; font-weight: 500; cursor: pointer; }
+.empty { grid-column: 1 / -1; text-align: center; color: #4a5565; padding: 32px 0; }
+.empty p { margin: 0 0 8px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

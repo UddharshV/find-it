@@ -1,15 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Item, ItemRequest, Page } from '../models/item';
+import { Item, ItemFilters, ItemRequest, Page } from '../models/item';
 
 @Injectable({ providedIn: 'root' })
 export class ItemService {
   private http = inject(HttpClient);
   private baseUrl = 'http://localhost:8080/api/items';
 
-  list(page = 0, size = 20): Observable<Page<Item>> {
-    return this.http.get<Page<Item>>(this.baseUrl, { params: { page, size } });
+list(filters: ItemFilters, page = 0, size = 20): Observable<Page<Item>> {
+    const params: Record<string, string | number> = { page, size };
+    if (filters.q) params['q'] = filters.q;
+    if (filters.type) params['type'] = filters.type;
+    if (filters.status) params['status'] = filters.status;
+    if (filters.category) params['category'] = filters.category;
+    return this.http.get<Page<Item>>(this.baseUrl, { params });
   }
 
   get(id: number): Observable<Item> {

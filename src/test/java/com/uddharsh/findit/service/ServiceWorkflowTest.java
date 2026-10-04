@@ -12,6 +12,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 
 import com.uddharsh.findit.dto.ItemRequest;
 import com.uddharsh.findit.entity.Category;
@@ -23,6 +24,9 @@ import com.uddharsh.findit.entity.ItemType;
 import com.uddharsh.findit.entity.User;
 import com.uddharsh.findit.exception.ConflictException;
 import com.uddharsh.findit.exception.ForbiddenException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -173,5 +177,22 @@ class ServiceWorkflowTest {
     void duplicateEmailIsRejected() {
         // createUser with "ASHA@ncsu.edu" (different case) → ConflictException
         assertThrows(ConflictException.class, () -> userService.createUser("ASHA", "ASHA@ncsu.edu"));
+    }
+    
+    @Test
+    void searchFiltersByTypeAndText() {
+        itemService.createItem(reporter.getId(), new ItemRequest("Car keys", "Toyota keychain",
+                ItemType.FOUND, Category.KEYS, "Talley", LocalDate.now(), null));
+        Pageable firstPage = PageRequest.of(0, 20);
+
+        Page<Item> found = itemService.searchItems(ItemType.FOUND, null, null, null, firstPage);
+        assertEquals(1, found.getTotalElements());
+        assertEquals("Car keys", found.getContent().get(0).getTitle());
+
+        Page<Item> byText = itemService.searchItems(null, null, null, "KEYCHAIN", firstPage);
+        assertEquals(1, byText.getTotalElements());   // matches the description, ignoring case
+
+        Page<Item> all = itemService.searchItems(null, null, null, null, firstPage);
+        assertEquals(2, all.getTotalElements());      // no filters → everything
     }
 }

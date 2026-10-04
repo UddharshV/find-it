@@ -1,11 +1,55 @@
 <h1>Lost &amp; found on campus</h1>
 
+<div class="filters">
+  <form class="search" (submit)="applySearch($event)">
+    <label for="search" class="visually-hidden">Search items</label>
+    <input id="search" type="search" placeholder="Search titles and descriptions"
+           [value]="searchText()" (input)="onSearchInput($event)">
+    <button type="submit" class="btn-primary">Search</button>
+  </form>
+
+  <div class="selects">
+    <label>
+      Type
+      <select [value]="filters().type" (change)="setFilter('type', $event)">
+        <option value="">All</option>
+        @for (type of types; track type) {
+          <option [value]="type">{{ type | label }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Status
+      <select [value]="filters().status" (change)="setFilter('status', $event)">
+        <option value="">All</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status | label }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Category
+      <select [value]="filters().category" (change)="setFilter('category', $event)">
+        <option value="">All</option>
+        @for (category of categories; track category) {
+          <option [value]="category">{{ category | label }}</option>
+        }
+      </select>
+    </label>
+    @if (hasActiveFilters()) {
+      <button type="button" class="btn-link" (click)="clearFilters()">Clear filters</button>
+    }
+  </div>
+</div>
+
 @if (loading()) {
   <p>Loading items…</p>
 } @else if (error()) {
   <p class="error">{{ error() }}</p>
 } @else {
-  <p class="count">{{ totalElements() }} {{ totalElements() === 1 ? 'item' : 'items' }}</p>
+  <p class="count">
+    {{ totalElements() }} {{ totalElements() === 1 ? 'item' : 'items' }}{{ hasActiveFilters() ? ' match your filters' : '' }}
+  </p>
   <div class="grid">
     @for (item of items(); track item.id) {
       <a class="card" [routerLink]="['/items', item.id]">
@@ -18,7 +62,14 @@
         <p class="meta">{{ item.type === 'LOST' ? 'Lost on' : 'Found on' }} {{ item.eventDate | eventDate }}</p>
       </a>
     } @empty {
-      <p>No items yet.</p>
+      <div class="empty">
+        @if (hasActiveFilters()) {
+          <p>No items match these filters.</p>
+          <button type="button" class="btn-link" (click)="clearFilters()">Clear filters</button>
+        } @else {
+          <p>No items yet.</p>
+        }
+      </div>
     }
   </div>
 
